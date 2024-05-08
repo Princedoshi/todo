@@ -3,15 +3,12 @@ from passlib.context import CryptContext
 from jose import JWTError, jwt
 from database import users_collection
 
-# JWT configuration
 SECRET_KEY = "prince"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-# Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# Authenticate user
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
