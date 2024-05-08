@@ -93,7 +93,7 @@ async def read_todo(todo_id: str, token: str = Depends(oauth2_scheme)):
 
 @router.post("/todos/", response_model=Todo)
 async def create_todo(todo: Todo, token: str = Depends(oauth2_scheme)):
-    # Verify token here if necessary
+    
     todo_dict = todo.dict()
     todo_dict.pop("id")
     todo_id = todos_collection.insert_one(todo_dict).inserted_id
@@ -103,20 +103,17 @@ async def create_todo(todo: Todo, token: str = Depends(oauth2_scheme)):
 async def get_todos(token: str = Depends(oauth2_scheme)):
     todos = []
     for todo in todos_collection.find():
-        todo["_id"] = str(todo["_id"])  # Convert ObjectId to string
+        todo["_id"] = str(todo["_id"])  
         todos.append(Todo(**todo))
     return todos
 
 @router.put("/todos/{todo_id}", response_model=Todo)
 async def update_todo(todo_id: str, todo_data: Todo, token: str = Depends(oauth2_scheme)):
-    # Verify token here if necessary
-    
-    # Check if the todo exists
+  
     existing_todo = todos_collection.find_one({"_id": ObjectId(todo_id)})
     if existing_todo is None:
         raise HTTPException(status_code=404, detail="Todo not found")
     
-    # Update the todo
     updated_todo = {
         "id": todo_id,
         "title": todo_data.title,
@@ -130,14 +127,12 @@ async def update_todo(todo_id: str, todo_data: Todo, token: str = Depends(oauth2
 
 @router.delete("/todos/{todo_id}")
 async def delete_todo(todo_id: str, token: str = Depends(oauth2_scheme)):
-    # Verify token here if necessary
-    
-    # Check if the todo exists
+
     existing_todo = todos_collection.find_one({"_id": ObjectId(todo_id)})
     if existing_todo is None:
         raise HTTPException(status_code=404, detail="Todo not found")
     
-    # Delete the todo
+  
     todos_collection.delete_one({"_id": ObjectId(todo_id)})
     
     return {"message": "Todo deleted successfully"}
